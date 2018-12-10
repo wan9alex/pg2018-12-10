@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+  <link rel="stylesheet" type="text/css" href="css/index.css" />
+  <title>Hello World</title>
+</head>
+
+<body>
+  <div class="app">
+    <h1>compass</h1>
+    <input type="button" value="getCurrentHeading" id="btn1">
+    <input type="button" value="watchHeading" id="btn2">
+    <input type="button" value="clearWatch" id="btn3">
+    <div id="box2">角度</div>
+    <div id="box" style="width:10px;height:10px;background:red"></div>
+  </div>
+  <script type="text/javascript" src="cordova.js"></script>
+  <!-- <script type="text/javascript" src="js/index.js"></script> -->
+  <script type="text/javascript">
+    document.addEventListener('deviceready', function () {
+      var btn1 = document.getElementById('btn1');
+      var btn2 = document.getElementById('btn2');
+      var btn3 = document.getElementById('btn3');
+      var box = document.getElementById('box');
+      var box2 = document.getElementById('box2');
+      
+      btn1.onclick = function () {
+        function onSuccess(heading) {
+            alert('Heading: ' + heading.magneticHeading);
+            box2.innerHTML=heading.magneticHeading
+        };
+
+        function onError(error) {
+            alert('CompassError: '+ error.code);
+        };
+          
+        navigator.compass.getCurrentHeading(onSuccess, onError);
+      }
+
+      var watchID=null;
+
+      btn2.addEventListener('touchstart',function(){
+        function onSuccess(heading) {
+          box.style.webkitTransform="rotate("+heading.magneticHeading+"deg)"//heading.magneticHeading;
+        };
+
+        function onError(compassError) {
+            alert('Compass error: ' + compassError.code);
+        };
+          
+        var options = { frequency: 100 };		//每隔3秒更新一次
+          
+        watchID = navigator.compass.watchHeading(onSuccess, onError, options);
+      },false)
+
+      btn3.addEventListener('touchstart',function(){
+        navigator.compass.clearWatch(watchID);
+      },false)
+
+
+    }, false);
+  </script>
+</body>
+
+</html>
